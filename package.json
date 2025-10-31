@@ -1,0 +1,19 @@
+{
+  "name": "kryshvac-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for Krysh HVAC website",
+  "main": "api/contact/index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^7.7.0"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.0.5198"
+  },
+  "keywords": ["azure-functions", "sendgrid", "contact-form", "hvac"],
+  "author": "Krysh HVAC",
+  "license": "MIT"
+}

@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://kryshvac.com.au/sitemap.xml
+
+# Crawl-delay for politeness
+Crawl-delay: 1
+
+# Block access to API endpoints from search engines
+Disallow: /api/
+
+# Block access to private assets
+Disallow: /assets/private/
+
+# Allow important pages
+Allow: /
+Allow: /services.html
+Allow: /about.html
+Allow: /gallery.html
+Allow: /blog.html
+Allow: /contact.html

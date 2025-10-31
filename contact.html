@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Krysh HVAC - Get Your Free Quote Today</title>
+    <meta name="description" content="Contact Krysh HVAC for professional heating and cooling services in Melbourne's western suburbs. Get your free quote today. Call us or fill out our contact form.">
+    <link rel="canonical" href="https://kryshvac.com.au/contact.html">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Contact Krysh HVAC - Get Your Free Quote Today">
+    <meta property="og:description" content="Contact us for professional HVAC services in Melbourne. Get your free quote today.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kryshvac.com.au/contact.html">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <img src="/assets/logo.svg" alt="Krysh HVAC Logo" class="logo">
+                <span class="brand-text">Krysh HVAC</span>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/services.html" class="nav-link">Services</a></li>
+                <li><a href="/about.html" class="nav-link">About</a></li>
+                <li><a href="/gallery.html" class="nav-link">Gallery</a></li>
+                <li><a href="/blog.html" class="nav-link">Blog</a></li>
+                <li><a href="/contact.html" class="nav-link active">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Page Header -->
+        <section class="page-header section">
+            <div class="container">
+                <h1>Contact Us</h1>
+                <p class="hero-subtitle">Ready to improve your comfort? Get in touch for a free quote on any of our professional HVAC services.</p>
+            </div>
+        </section>
+
+        <!-- Contact Form & Info -->
+        <section class="contact-main section">
+            <div class="container">
+                <div class="contact-content">
+                    
+                    <!-- Contact Form -->
+                    <div class="contact-form-section">
+                        <h2>Get Your Free Quote</h2>
+                        <form id="contact-form" class="contact-form" action="/api/contact" method="POST">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="name">Full Name *</label>
+                                    <input type="text" id="name" name="name" class="form-control" required>
+                                    <div class="form-error" id="name-error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address *</label>
+                                    <input type="email" id="email" name="email" class="form-control" required>
+                                    <div class="form-error" id="email-error"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" class="form-control" required>
+                                    <div class="form-error" id="phone-error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="suburb">Suburb</label>
+                                    <input type="text" id="suburb" name="suburb" class="form-control" placeholder="e.g., Werribee, Altona, Point Cook">
+                                    <div class="form-error" id="suburb-error"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="service">Service Required</label>
+                                <select id="service" name="service" class="form-control">
+                                    <option value="">Select a service (optional)</option>
+                                    <option value="split-system-installation">Split System Installation</option>
+                                    <option value="split-system-repair">Split System Repair</option>
+                                    <option value="ducted-installation">Ducted System Installation</option>
+                                    <option value="ducted-repair">Ducted System Repair</option>
+                                    <option value="evaporative-installation">Evaporative Cooling Installation</option>
+                                    <option value="evaporative-service">Evaporative Cooling Service</option>
+                                    <option value="maintenance">System Maintenance</option>
+                                    <option value="commercial">Commercial HVAC</option>
+                                    <option value="emergency">Emergency Repair</option>
+                                    <option value="consultation">General Consultation</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">Message *</label>
+                                <textarea id="message" name="message" class="form-control" rows="5" placeholder="Tell us about your HVAC needs, property type, preferred timing, or any specific requirements..." required></textarea>
+                                <div class="form-error" id="message-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="marketing-consent" name="marketing_consent">
+                                    <span class="checkmark"></span>
+                                    I'd like to receive occasional HVAC tips and maintenance reminders (optional)
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-large" id="submit-btn">
+                                <span class="btn-text">Send Message</span>
+                                <span class="spinner" style="display: none;"></span>
+                            </button>
+                            
+                            <div class="form-success" id="form-success" style="display: none;">
+                                <h3>Thank you for your message!</h3>
+                                <p>We'll get back to you within 24 hours with your free quote.</p>
+                            </div>
+                            
+                            <div class="form-error" id="form-error" style="display: none;">
+                                <h3>Something went wrong</h3>
+                                <p>Please try again or call us directly at <a href="tel:+61-3-XXXX-XXXX">+61 3 XXXX XXXX</a></p>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="contact-info-section">
+                        <h2>Get in Touch</h2>
+                        
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <div class="contact-icon">📞</div>
+                                <div class="contact-details">
+                                    <h3>Phone</h3>
+                                    <p><a href="tel:+61-3-XXXX-XXXX">+61 3 XXXX XXXX</a></p>
+                                    <span class="contact-note">24/7 Emergency Service Available</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <div class="contact-icon">✉️</div>
+                                <div class="contact-details">
+                                    <h3>Email</h3>
+                                    <p><a href="mailto:info@kryshvac.com.au">info@kryshvac.com.au</a></p>
+                                    <span class="contact-note">We respond within 4 hours</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <div class="contact-icon">📍</div>
+                                <div class="contact-details">
+                                    <h3>Service Area</h3>
+                                    <p>Melbourne's Western Suburbs</p>
+                                    <span class="contact-note">Werribee, Altona, Point Cook & surrounding areas</span>
+                                </div>
+                            </div>
+                            
+                            <div class="contact-item">
+                                <div class="contact-icon">🕐</div>
+                                <div class="contact-details">
+                                    <h3>Business Hours</h3>
+                                    <p>Monday - Friday: 7:00 AM - 6:00 PM</p>
+                                    <p>Saturday: 8:00 AM - 4:00 PM</p>
+                                    <p>Sunday: Emergency calls only</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="quick-actions">
+                            <h3>Quick Actions</h3>
+                            <div class="action-buttons">
+                                <a href="tel:+61-3-XXXX-XXXX" class="action-btn">
+                                    <span class="action-icon">📞</span>
+                                    Call Now
+                                </a>
+                                <a href="mailto:info@kryshvac.com.au" class="action-btn">
+                                    <span class="action-icon">✉️</span>
+                                    Send Email
+                                </a>
+                                <a href="#contact-form" class="action-btn">
+                                    <span class="action-icon">📝</span>
+                                    Get Quote
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Areas Map -->
+        <section class="service-map section bg-light">
+            <div class="container">
+                <h2 class="section-title">Our Service Areas</h2>
+                <div class="map-content">
+                    <div class="map-info">
+                        <h3>Serving Melbourne's Western Suburbs</h3>
+                        <p>We provide professional HVAC services across a wide area of Melbourne's western suburbs. Our local knowledge and quick response times ensure you get the best service possible.</p>
+                        
+                        <div class="suburbs-coverage">
+                            <h4>Primary Service Areas:</h4>
+                            <div class="suburbs-list-grid">
+                                <ul>
+                                    <li>✅ Altona & Altona North</li>
+                                    <li>✅ Werribee & Werribee South</li>
+                                    <li>✅ Point Cook & Sanctuary Lakes</li>
+                                    <li>✅ Hoppers Crossing & Tarneit</li>
+                                </ul>
+                                <ul>
+                                    <li>✅ Footscray & Yarraville</li>
+                                    <li>✅ Williamstown & Newport</li>
+                                    <li>✅ Sunshine & St Albans</li>
+                                    <li>✅ Laverton & Aircraft</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <p><strong>Don't see your area?</strong> Contact us anyway - we may still be able to help or can recommend a trusted local provider.</p>
+                    </div>
+                    <div class="map-placeholder">
+                        <img src="/assets/service-area-map-large.jpg" alt="Detailed map of Krysh HVAC service areas in Melbourne's western suburbs" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="contact-faq section">
+            <div class="container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h3>How quickly can you provide a quote?</h3>
+                        <p>We provide free quotes within 24 hours of your inquiry. For urgent requests, we can often provide same-day quotes over the phone.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Do you offer emergency services?</h3>
+                        <p>Yes, we provide 24/7 emergency HVAC repair services throughout our service area. Emergency rates apply for after-hours calls.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Are your technicians licensed and insured?</h3>
+                        <p>Absolutely. All our technicians are ARC certified, licensed electricians, and we carry comprehensive public liability insurance.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Do you provide warranties on your work?</h3>
+                        <p>Yes, we provide comprehensive warranties on all installations and repairs. Warranty terms vary by service type and will be clearly explained in your quote.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Ready to Get Started?</h2>
+                    <p>Contact us today for professional HVAC services and experience the Krysh HVAC difference.</p>
+                    <div class="cta-buttons">
+                        <a href="tel:+61-3-XXXX-XXXX" class="btn btn-primary btn-large">Call Now</a>
+                        <a href="#contact-form" class="btn btn-secondary btn-large">Get Quote</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <img src="/assets/logo.svg" alt="Krysh HVAC Logo" class="footer-logo">
+                        <span class="brand-text">Krysh HVAC</span>
+                    </div>
+                    <p>Reliable heating and cooling solutions across Melbourne's western suburbs.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="/services.html#split-systems">Split Systems</a></li>
+                        <li><a href="/services.html#ducted-systems">Ducted Systems</a></li>
+                        <li><a href="/services.html#evaporative">Evaporative Cooling</a></li>
+                        <li><a href="/services.html#maintenance">Maintenance</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/about.html">About Us</a></li>
+                        <li><a href="/gallery.html">Gallery</a></li>
+                        <li><a href="/blog.html">Blog</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📞 <a href="tel:+61-3-XXXX-XXXX">+61 3 XXXX XXXX</a></p>
+                    <p>✉️ <a href="mailto:info@kryshvac.com.au">info@kryshvac.com.au</a></p>
+                    <p>📍 Serving Melbourne's Western Suburbs</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Krysh HVAC | ABN XX XXX XXX XXX | ARC Certified | <a href="/privacy.html">Privacy Policy</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+</html>

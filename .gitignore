@@ -6,6 +6,12 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# Large image files
+*.png
+!assets/krysharies-logo.png
+kryshAirieslogonnn.png
+assets/kryshairieslogo.png
+
 # Runtime data
 pids
 *.pid

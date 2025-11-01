@@ -270,13 +270,22 @@ skipLink.addEventListener('blur', function() {
 });
 document.body.insertBefore(skipLink, document.body.firstChild);
 
-// Error Handling for Missing Images
+// Error Handling for Missing Images - DISABLED temporarily
+// This was causing too many 404 requests
+/*
 document.querySelectorAll('img').forEach(img => {
     img.addEventListener('error', function() {
-        this.src = '/assets/placeholder-image.jpg';
-        this.alt = 'Image not available';
+        // Prevent infinite loop if placeholder also fails
+        if (!this.src.includes('placeholder-image.jpg')) {
+            this.src = '/assets/placeholder-image.jpg';
+            this.alt = 'Image not available';
+        } else {
+            // Hide the image if even placeholder fails
+            this.style.display = 'none';
+        }
     });
 });
+*/
 
 // Simple Analytics Event Tracking (if analytics is loaded)
 function trackEvent(eventName, eventData = {}) {

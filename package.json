@@ -1,19 +1,20 @@
 {
-  "name": "kryshvac-api",
+  "name": "krysharies-api",
   "version": "1.0.0",
-  "description": "Azure Functions API for Krysh HVAC website",
+  "description": "Azure Functions API for KryshAiries Heating & Cooling website with AI-powered customer analysis",
   "main": "api/contact/index.js",
   "scripts": {
     "start": "func start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@sendgrid/mail": "^7.7.0"
+    "@sendgrid/mail": "^7.7.0",
+    "openai": "^4.0.0"
   },
   "devDependencies": {
     "azure-functions-core-tools": "^4.0.5198"
   },
-  "keywords": ["azure-functions", "sendgrid", "contact-form", "hvac"],
-  "author": "Krysh HVAC",
+  "keywords": ["azure-functions", "sendgrid", "contact-form", "hvac", "openai", "ai-analysis"],
+  "author": "KryshAiries Heating & Cooling",
   "license": "MIT"
 }

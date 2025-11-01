@@ -1,4 +1,5 @@
 const sgMail = require('@sendgrid/mail');
+const OpenAI = require('openai');
 
 module.exports = async function (context, req) {
     context.log('Contact form submission received');
@@ -115,6 +116,23 @@ module.exports = async function (context, req) {
             suburb: sanitizedData.suburb 
         });
 
+        // AI Analysis of Customer Inquiry
+        let aiAnalysis = null;
+        const openaiApiKey = process.env.OPENAI_API_KEY;
+        
+        if (openaiApiKey) {
+            try {
+                const openai = new OpenAI({ apiKey: openaiApiKey });
+                aiAnalysis = await analyzeCustomerInquiry(openai, sanitizedData);
+                context.log('AI analysis completed successfully');
+            } catch (aiError) {
+                context.log.error('OpenAI analysis error:', aiError);
+                // Continue without AI analysis if it fails
+            }
+        } else {
+            context.log('OpenAI not configured - skipping AI analysis');
+        }
+
         // Check for SendGrid configuration
         const sendGridApiKey = process.env.SENDGRID_API_KEY;
         const toEmail = process.env.TO_EMAIL;
@@ -123,35 +141,39 @@ module.exports = async function (context, req) {
             // Send email via SendGrid
             sgMail.setApiKey(sendGridApiKey);
 
-            // Email to business
+            // Email to business with AI analysis
+            const businessEmailSubject = aiAnalysis 
+                ? `[KryshAiries] New Inquiry - ${aiAnalysis.serviceCategory} - ${aiAnalysis.urgencyLevel}`
+                : `[KryshAiries] New Contact Form Submission - ${sanitizedData.name}`;
+
             const businessEmail = {
                 to: toEmail,
                 from: {
-                    email: process.env.FROM_EMAIL || 'noreply@kryshvac.com.au',
-                    name: 'Krysh HVAC Website'
+                    email: process.env.FROM_EMAIL || 'noreply@krysharies.com.au',
+                    name: 'KryshAiries Website'
                 },
                 replyTo: {
                     email: sanitizedData.email,
                     name: sanitizedData.name
                 },
-                subject: `New Contact Form Submission - ${sanitizedData.name}`,
-                html: generateBusinessEmailHtml(sanitizedData),
-                text: generateBusinessEmailText(sanitizedData)
+                subject: businessEmailSubject,
+                html: generateBusinessEmailHtml(sanitizedData, aiAnalysis),
+                text: generateBusinessEmailText(sanitizedData, aiAnalysis)
             };
 
-            // Auto-reply email to customer
+            // Auto-reply email to customer with personalized response
             const customerEmail = {
                 to: {
                     email: sanitizedData.email,
                     name: sanitizedData.name
                 },
                 from: {
-                    email: process.env.FROM_EMAIL || 'noreply@kryshvac.com.au',
-                    name: 'Krysh HVAC'
+                    email: process.env.FROM_EMAIL || 'noreply@krysharies.com.au',
+                    name: 'KryshAiries Heating & Cooling'
                 },
-                subject: 'Thank you for contacting Krysh HVAC',
-                html: generateCustomerEmailHtml(sanitizedData),
-                text: generateCustomerEmailText(sanitizedData)
+                subject: 'Thank you for contacting KryshAiries - Your Air, Our Care',
+                html: generateCustomerEmailHtml(sanitizedData, aiAnalysis),
+                text: generateCustomerEmailText(sanitizedData, aiAnalysis)
             };
 
             try {
@@ -345,20 +367,311 @@ What happens next?
 - One of our certified technicians will contact you within 24 hours  
 - We'll provide a free, no-obligation quote for your HVAC needs
 
+// AI Analysis Function
+async function analyzeCustomerInquiry(openai, customerData) {
+    try {
+        const analysisPrompt = `Analyze this HVAC service inquiry and provide a structured response in JSON format:
+
+Customer Details:
+- Name: ${customerData.name}
+- Email: ${customerData.email}
+- Phone: ${customerData.phone}
+- Suburb: ${customerData.suburb}
+- Service: ${customerData.service}
+- Message: ${customerData.message}
+- Preferred Contact: ${customerData.preferredContact}
+
+Please provide analysis in this exact JSON structure:
+{
+    "serviceCategory": "Split System/Ducted Heating/Evaporative Cooling/Commercial/Maintenance/Emergency/General",
+    "urgencyLevel": "Low/Medium/High/Emergency",
+    "complexityLevel": "Simple/Moderate/Complex",
+    "recommendedResponseTime": "Within 2 hours/Same day/Next business day/Within 48 hours",
+    "keyPoints": ["point1", "point2", "point3"],
+    "followUpActions": ["action1", "action2"],
+    "estimatedJobValue": "Under $500/$500-2000/$2000-5000/$5000+/Quote Required",
+    "customerType": "Residential/Commercial/Emergency",
+    "draftResponse": "Professional, personalized email response ready to copy-paste"
+}
+
+Focus on:
+- HVAC technical requirements
+- Urgency indicators
+- Customer's work schedule (9-to-5 consideration)
+- Melbourne climate considerations
+- Professional but friendly tone for busy professionals`;
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "system",
+                    content: "You are an expert HVAC business analyst. Analyze customer inquiries for a Melbourne-based heating and cooling company that specializes in flexible scheduling for working professionals. Provide structured analysis and draft professional responses."
+                },
+                {
+                    role: "user",
+                    content: analysisPrompt
+                }
+            ],
+            temperature: 0.3,
+            max_tokens: 1000
+        });
+
+        const analysisText = completion.choices[0].message.content.trim();
+        
+        // Extract JSON from the response
+        const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            return JSON.parse(jsonMatch[0]);
+        } else {
+            throw new Error('No valid JSON found in OpenAI response');
+        }
+        
+    } catch (error) {
+        console.error('AI analysis error:', error);
+        return null;
+    }
+}
+
+// Updated Email Generation Functions
+function generateBusinessEmailHtml(data, aiAnalysis) {
+    const aiSection = aiAnalysis ? `
+        <div style="background-color: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #007bff;">
+            <h3 style="color: #007bff; margin: 0 0 15px 0;">🤖 AI ANALYSIS</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #333;">Service Category:</h4>
+                <p style="margin: 0; color: #666;">${aiAnalysis.serviceCategory}</p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #333;">Urgency Level:</h4>
+                <p style="margin: 0; color: #666; font-weight: bold;">${aiAnalysis.urgencyLevel}</p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #333;">Recommended Response Time:</h4>
+                <p style="margin: 0; color: #666;">${aiAnalysis.recommendedResponseTime}</p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #333;">Key Points to Address:</h4>
+                <ul style="margin: 5px 0; color: #666;">
+                    ${aiAnalysis.keyPoints.map(point => `<li>${point}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #333;">Follow-up Actions:</h4>
+                <ul style="margin: 5px 0; color: #666;">
+                    ${aiAnalysis.followUpActions.map(action => `<li>${action}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #333;">Estimated Job Value:</h4>
+                <p style="margin: 0; color: #666;">${aiAnalysis.estimatedJobValue}</p>
+            </div>
+        </div>
+        
+        <div style="background-color: #e8f5e8; padding: 20px; margin: 20px 0; border-left: 4px solid #28a745;">
+            <h3 style="color: #28a745; margin: 0 0 15px 0;">📝 DRAFT RESPONSE</h3>
+            <div style="background-color: white; padding: 15px; border-radius: 5px; color: #333; line-height: 1.6;">
+                ${aiAnalysis.draftResponse.replace(/\n/g, '<br>')}
+            </div>
+            <p style="font-size: 12px; color: #666; margin: 10px 0 0 0;">
+                <em>Copy and paste the above response, then personalize as needed.</em>
+            </p>
+        </div>
+    ` : '';
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>New Customer Inquiry - KryshAiries</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #007bff; color: white; padding: 20px; text-align: center;">
+            <h1 style="margin: 0;">KryshAiries Heating & Cooling</h1>
+            <p style="margin: 5px 0 0 0;">New Customer Inquiry</p>
+        </div>
+        
+        <div style="background-color: #fff3cd; padding: 15px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <h3 style="color: #856404; margin: 0 0 10px 0;">📞 CUSTOMER DETAILS</h3>
+            <table style="width: 100%;">
+                <tr><td style="font-weight: bold; padding: 5px 0;">Name:</td><td>${data.name}</td></tr>
+                <tr><td style="font-weight: bold; padding: 5px 0;">Email:</td><td><a href="mailto:${data.email}">${data.email}</a></td></tr>
+                <tr><td style="font-weight: bold; padding: 5px 0;">Phone:</td><td><a href="tel:${data.phone}">${data.phone}</a></td></tr>
+                <tr><td style="font-weight: bold; padding: 5px 0;">Suburb:</td><td>${data.suburb}</td></tr>
+                <tr><td style="font-weight: bold; padding: 5px 0;">Service:</td><td>${data.service}</td></tr>
+                <tr><td style="font-weight: bold; padding: 5px 0;">Preferred Contact:</td><td>${data.preferredContact}</td></tr>
+                <tr><td style="font-weight: bold; padding: 5px 0;">Submitted:</td><td>${new Date(data.submittedAt).toLocaleString('en-AU')}</td></tr>
+            </table>
+        </div>
+        
+        <div style="background-color: #f8f9fa; padding: 20px; margin: 20px 0; border-left: 4px solid #6c757d;">
+            <h3 style="color: #495057; margin: 0 0 15px 0;">💬 CUSTOMER MESSAGE</h3>
+            <p style="background-color: white; padding: 15px; border-radius: 5px; margin: 0;">${data.message}</p>
+        </div>
+        
+        ${aiSection}
+        
+        <div style="background-color: #f8f9fa; padding: 20px; margin: 20px 0; text-align: center; border-top: 3px solid #007bff;">
+            <p style="margin: 0; color: #666;">
+                <strong>KryshAiries Heating & Cooling</strong><br>
+                Your Air, Our Care<br>
+                Flexible scheduling for working professionals
+            </p>
+        </div>
+    </div>
+</body>
+</html>`;
+}
+
+function generateBusinessEmailText(data, aiAnalysis) {
+    const aiSection = aiAnalysis ? `
+
+=== AI ANALYSIS ===
+
+Service Category: ${aiAnalysis.serviceCategory}
+Urgency Level: ${aiAnalysis.urgencyLevel}
+Recommended Response Time: ${aiAnalysis.recommendedResponseTime}
+Complexity Level: ${aiAnalysis.complexityLevel}
+Estimated Job Value: ${aiAnalysis.estimatedJobValue}
+
+Key Points to Address:
+${aiAnalysis.keyPoints.map(point => `- ${point}`).join('\n')}
+
+Follow-up Actions:
+${aiAnalysis.followUpActions.map(action => `- ${action}`).join('\n')}
+
+=== DRAFT RESPONSE ===
+${aiAnalysis.draftResponse}
+
+(Copy and paste the above response, then personalize as needed)
+
+` : '';
+
+    return `KryshAiries Heating & Cooling - New Customer Inquiry
+
+CUSTOMER DETAILS:
+- Name: ${data.name}
+- Email: ${data.email}
+- Phone: ${data.phone}
+- Suburb: ${data.suburb}
+- Service: ${data.service}
+- Preferred Contact: ${data.preferredContact}
+- Submitted: ${new Date(data.submittedAt).toLocaleString('en-AU')}
+
+CUSTOMER MESSAGE:
+${data.message}
+
+${aiSection}
+
+---
+KryshAiries Heating & Cooling
+Your Air, Our Care
+Flexible scheduling for working professionals
+https://krysharies.com.au
+`;
+}
+
+function generateCustomerEmailHtml(data, aiAnalysis) {
+    // Use AI-generated response if available, otherwise use standard response
+    const responseMessage = aiAnalysis?.draftResponse || `
+Dear ${data.name},
+
+Thank you for contacting KryshAiries Heating & Cooling. We appreciate your interest in our services and will get back to you soon.
+
+We understand that as a working professional, you need flexibility in scheduling. That's why we offer evening and weekend appointments to work around your busy schedule.
+
+Our ARC certified technicians will provide you with a comprehensive assessment and competitive quote for your ${data.service} needs in ${data.suburb}.
+
+We'll contact you within 24 hours via your preferred method (${data.preferredContact}) to discuss your requirements and arrange a suitable time for consultation.
+
+Best regards,
+The KryshAiries Team
+`;
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Thank you for contacting KryshAiries</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #007bff; color: white; padding: 30px; text-align: center;">
+            <h1 style="margin: 0;">KryshAiries</h1>
+            <p style="margin: 10px 0 0 0; font-size: 18px;">Your Air, Our Care</p>
+        </div>
+        
+        <div style="padding: 30px; background-color: #f8f9fa;">
+            <div style="background-color: white; padding: 25px; border-radius: 8px;">
+                ${responseMessage.replace(/\n/g, '<br><br>')}
+            </div>
+        </div>
+        
+        <div style="background-color: #28a745; color: white; padding: 20px; text-align: center;">
+            <h3 style="margin: 0 0 10px 0;">Need immediate assistance?</h3>
+            <p style="margin: 0; font-size: 20px;">
+                📞 <a href="tel:+61418157327" style="color: white; text-decoration: none;">0418 157 327</a>
+            </p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">Text for 4-hour response!</p>
+        </div>
+        
+        <div style="padding: 20px; text-align: center; color: #666;">
+            <p style="margin: 0;">
+                <strong>KryshAiries Heating & Cooling</strong><br>
+                Professional HVAC Services<br>
+                Serving Melbourne's Western Suburbs<br>
+                <a href="https://krysharies.com.au" style="color: #007bff;">krysharies.com.au</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`;
+}
+
+function generateCustomerEmailText(data, aiAnalysis) {
+    const responseMessage = aiAnalysis?.draftResponse || `
+Dear ${data.name},
+
+Thank you for contacting KryshAiries Heating & Cooling. We appreciate your interest in our services and will get back to you soon.
+
+We understand that as a working professional, you need flexibility in scheduling. That's why we offer evening and weekend appointments to work around your busy schedule.
+
+Our ARC certified technicians will provide you with a comprehensive assessment and competitive quote for your ${data.service} needs in ${data.suburb}.
+
+We'll contact you within 24 hours via your preferred method (${data.preferredContact}) to discuss your requirements and arrange a suitable time for consultation.
+
+Best regards,
+The KryshAiries Team
+`;
+
+    return `KryshAiries Heating & Cooling - Your Air, Our Care
+
+${responseMessage}
+
+Need immediate assistance?
+Call us directly at 0418 157 327
+Text for 4-hour response!
+
 Your submission details:
 - Service Interest: ${data.service}
 - Preferred Contact: ${data.preferredContact}
 - Contact Phone: ${data.phone}
 
-Need immediate assistance?
-Call us directly at +61 3 XXXX XXXX
-
-Thank you for choosing Krysh HVAC for your heating and cooling needs!
+Thank you for choosing KryshAiries for your heating and cooling needs!
 
 ---
-Krysh HVAC
-Professional HVAC Services
+KryshAiries Heating & Cooling
+Your Air, Our Care - Professional HVAC Services
 Serving Melbourne's Western Suburbs
-https://kryshvac.com.au
+https://krysharies.com.au
 `;
 }

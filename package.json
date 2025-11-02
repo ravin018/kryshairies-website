@@ -4,6 +4,7 @@
   "description": "Azure Functions API for KryshAiries Heating & Cooling website with AI-powered customer analysis",
   "main": "api/contact/index.js",
   "scripts": {
+    "build": "echo 'Static website - no build required' && exit 0",
     "start": "func start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

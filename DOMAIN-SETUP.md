@@ -1,7 +1,7 @@
-# Custom Domain Setup: kryshairies.com.au
+# Custom Domain Setup: kryshairies.com.au (Root Domain Only)
 
 ## ✅ **Completed: Code Updates**
-All website references have been updated from `kryshvac.com.au` to `kryshairies.com.au`:
+All website references have been updated to use `kryshairies.com.au` (root domain only):
 
 - ✅ **sitemap.xml** - Updated all URLs to kryshairies.com.au
 - ✅ **robots.txt** - Updated sitemap reference
@@ -9,90 +9,79 @@ All website references have been updated from `kryshvac.com.au` to `kryshairies.
 - ✅ **about.html** - Updated canonical URL, Open Graph URL, and email  
 - ✅ **404.html** - Updated email reference
 
-## 🚀 **Next Steps: Azure Portal Configuration**
+## 🎯 **Root Domain Only Strategy**
+Using only `kryshairies.com.au` (no www subdomain) for:
+- ✅ **Simpler SSL management** - no certificate chain issues
+- ✅ **Better SEO** - single domain authority
+- ✅ **Modern web standard** - cleaner branding
+- ✅ **Easier maintenance** - one domain to manage
 
-### 1. **Add Custom Domain in Azure Static Web Apps**
+## 🔧 **DNS Configuration Required**
 
-1. **Go to Azure Portal**: https://portal.azure.com
-2. **Navigate to your Static Web App** (`witty-cliff-0c75bee00`)
-3. **Go to "Custom domains"** (left sidebar)
-4. **Click "+ Add"**
-5. **Enter domain**: `kryshairies.com.au`
-6. **Select**: "Custom domain on other DNS"
-7. **Click "Next"**
+### **Remove WWW CNAME Record:**
+1. **Go to Azure Portal** → **DNS zones** → **kryshairies.com.au**
+2. **Find the CNAME record**: `www` → `witty-cliff-0c75bee00.3.azurestaticapps.net`
+3. **Delete this CNAME record**
 
-### 2. **Configure DNS Records**
-
-Azure will provide you with DNS records. Add these to your domain registrar:
-
-#### **Required DNS Records:**
+### **Keep Only A Record:**
 ```
-# CNAME Record (for www subdomain - optional)
-Type: CNAME
-Name: www
-Value: witty-cliff-0c75bee00.3.azurestaticapps.net
-
-# A Record (for root domain)
 Type: A
-Name: @
-Value: [Azure will provide the IP address]
-
-# TXT Record (for domain verification)
-Type: TXT
-Name: _dnsauth
-Value: [Azure will provide the verification token]
+Name: @ (root domain)
+Value: 13.75.93.156
+TTL: 300
 ```
 
-### 3. **Domain Registrar Setup**
-1. **Log in to your domain registrar** (where you purchased kryshairies.com.au)
-2. **Go to DNS Management**
-3. **Add the records provided by Azure**
-4. **Wait for DNS propagation** (can take up to 48 hours)
+## 🚀 **Optional: WWW Redirect Setup**
 
-### 4. **Verify Domain in Azure**
-1. **Return to Azure Portal**
-2. **Click "Validate"** to check DNS records
-3. **Once validated, click "Add"**
-4. **Enable HTTPS** (Azure will automatically provision SSL certificate)
+If you want users typing `www.kryshairies.com.au` to redirect to `kryshairies.com.au`:
 
-## 🔍 **Testing After Setup**
+### **Option 1: Azure DNS Redirect (Recommended)**
+1. **Create CNAME record**:
+   ```
+   Type: CNAME
+   Name: www
+   Value: kryshairies.com.au
+   TTL: 300
+   ```
 
-### **DNS Propagation Check:**
+### **Option 2: No WWW Record (Simplest)**
+- Leave www undefined - users will get "domain not found"
+- Most users don't type www anyway
+
+## 🔍 **Testing After DNS Changes**
+
+### **Test Commands:**
 ```bash
-# Test domain resolution
-nslookup kryshairies.com.au
-
-# Test website access
+# Test root domain (should work)
 curl -I https://kryshairies.com.au
+
+# Test www (should fail after CNAME removal)
+curl -I https://www.kryshairies.com.au
+
+# Verify DNS changes
+nslookup kryshairies.com.au
+nslookup www.kryshairies.com.au
 ```
 
 ### **Expected Results:**
-- ✅ https://kryshairies.com.au loads your website
-- ✅ SSL certificate is active (green padlock)
-- ✅ Automatic redirect from Azure URL to custom domain
-- ✅ All pages accessible with new domain
+- ✅ https://kryshairies.com.au - Works perfectly with SSL
+- ❌ https://www.kryshairies.com.au - Domain not found (or redirects if you choose Option 1)
 
-## 📧 **Email Configuration (Optional)**
-
-If you want to use email addresses like `info@kryshairies.com.au`:
-
-1. **Contact your domain registrar** for email hosting options
-2. **Or use a service like** Google Workspace, Microsoft 365, or other email providers
-3. **Set up MX records** as provided by your email service
+## 📧 **Email Configuration**
+All email addresses now use: `info@kryshairies.com.au`
 
 ## 🎯 **Current Status**
 
 - ✅ **Website Code**: Ready with kryshairies.com.au references
-- ⏳ **DNS Setup**: Waiting for your domain registrar configuration
-- ⏳ **Azure Custom Domain**: Waiting for DNS verification
-- ⏳ **SSL Certificate**: Will be auto-provisioned by Azure
+- ✅ **Root Domain DNS**: Working perfectly  
+- ⏳ **WWW CNAME Removal**: Waiting for your action
+- ✅ **SSL Certificate**: Perfect on root domain
 
-## 📱 **Contact**
+## 📱 **Final Website URLs**
 
-Once the domain is active, all contact references will use:
-- **Email**: info@kryshairies.com.au  
-- **Website**: https://kryshairies.com.au
+**Primary Website**: https://kryshairies.com.au  
+**Email**: info@kryshairies.com.au
 
 ---
 
-**Note**: The website will continue to work on the Azure URL until the custom domain is fully configured.
+**Next Action**: Remove the www CNAME record from Azure DNS to eliminate SSL certificate issues.

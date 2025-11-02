@@ -30,10 +30,20 @@ git config --global http.postBuffer 524288000
 
 This increases the buffer size to 500MB, allowing larger pushes to succeed.
 
+## Cleanup (Optional)
+After successful deployment, you can reset the git buffer to its default value:
+
+```
+git config --global --unset http.postBuffer
+```
+
+This removes the custom buffer size setting and returns git to its default behavior.
+
 ## Summary
 - The error was caused by a buffer size limit in Git
 - Increasing the buffer size with `git config --global http.postBuffer 524288000` resolved the issue
 - After this change, pushes to GitHub worked as expected
+- Optional: Reset to default after deployment with `git config --global --unset http.postBuffer`
 
 **Reference:**
 - [Stack Overflow: git push error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400](https://stackoverflow.com/questions/38768454/git-push-error-rpc-failed-http-400-curl-22-the-requested-url-returned-error-400)
